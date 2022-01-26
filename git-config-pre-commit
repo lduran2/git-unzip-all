@@ -3,11 +3,14 @@
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
 # When      : 2022-01-25t22:16R
-# Version   : 1.1.1
+# Version   : 1.1.2
 # 
 # CHANGELOG :
+#   v1.1.2 - 2022-01-25t22:24R
+#       fixed the unformated strings for the life cycle messages
+#
 #   v1.1.1 - 2022-01-25t22:16R
-#       fixed the template strings for the filenames
+#       fixed the template strings for the config filenames
 #
 #   v1.1.0 - 2022-01-25t22:02R
 #       sets up the pattern file
@@ -17,8 +20,8 @@
 #       composes the hook file for pre-commit
 #
 
-# the repo root directory
-declare -r ROOT='../../'
+# the path of the repo root
+declare -r ROOT="${BASH_SOURCE%/*}/../../"
 # hook file to which to attach
 declare -r HOOK_FILE="$ROOT.git/hooks/pre-commit"
 # contains the patterns of files to unzip
@@ -27,19 +30,19 @@ declare -r PATTERN_FILE="$ROOT.unzip"
 # if the file does not exist
 if [[ ! -f $HOOK_FILE ]] ;
 then
-	echo "Created the pre-commit hook file."
+	echo 'Created the pre-commit hook file.'
 	# start it by adding the head
 	cat < templates/header > $HOOK_FILE
 fi # [[ ! -f $HOOK_FILE ]]
 
-echo "Added `unzip-all` to the pre-commit hook file."
+echo 'Added `unzip-all` to the pre-commit hook file.'
 # always add the hook that attaches `. hooks/unzip-all`
 cat < templates/body-source >> $HOOK_FILE
 
 # if the pattern file does not exist
 if [[ ! -f $PATTERN_FILE ]] ;
 then
-	echo "Create the pattern file `/.unzip`"
+	echo 'Create the pattern file `/.unzip`'
 	# copy it from the template
 	cat < templates/.unzip > $PATTERN_FILE
 fi # [[ ! -f $PATTERN_FILE ]]
