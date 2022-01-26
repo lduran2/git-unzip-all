@@ -2,10 +2,13 @@
 # Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t22:02R
-# Version   : 1.1.0
+# When      : 2022-01-25t22:16R
+# Version   : 1.1.1
 # 
 # CHANGELOG :
+#   v1.1.1 - 2022-01-25t22:16R
+#       fixed the template strings for the filenames
+#
 #   v1.1.0 - 2022-01-25t22:02R
 #       sets up the pattern file
 #       reconfigured for submodule
@@ -17,9 +20,9 @@
 # the repo root directory
 declare -r ROOT='../../'
 # hook file to which to attach
-declare -r HOOK_FILE='$ROOT.git/hooks/pre-commit'
+declare -r HOOK_FILE="$ROOT.git/hooks/pre-commit"
 # contains the patterns of files to unzip
-declare -r PATTERN_FILE='$ROOT.unzip'
+declare -r PATTERN_FILE="$ROOT.unzip"
 
 # if the file does not exist
 if [[ ! -f $HOOK_FILE ]] ;
