@@ -2,11 +2,11 @@
 # Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t19:39R
+# When      : 2022-01-25t22:02R
 # Version   : 1.1.0
 # 
 # CHANGELOG :
-#   v1.1.0 - 2022-01-25t20:02R
+#   v1.1.0 - 2022-01-25t22:02R
 #       sets up the pattern file
 #       reconfigured for submodule
 #
