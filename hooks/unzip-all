@@ -3,10 +3,13 @@
 # Decompresses all Simulink models in this repo after pushing to
 # remote.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t06:40R
-# Version   : 1.2.0
+# When      : 2022-01-25t20:02R
+# Version   : 1.2.1
 # 
 # CHANGELOG :
+#   v1.2.1 - 2022-01-25t20:02R
+#       nonverbose unzip bcs the files were not being unzipped
+#
 #   v1.2.0 - 2022-01-25t06:40R
 #       trim spaces from patterns; root constant, progress message,
 #           verbose unzip
@@ -42,7 +45,7 @@ while read SPACE_PATTERN ; do
 				# unzip to a directory with the same name
 				# sans extension, overwriting any files therein
 				unzip_dir="${FILE%.*}"
-				unzip -vo "$FILE" -d "$unzip_dir"
+				unzip -o "$FILE" -d "$unzip_dir"
 				# unadd the file from commit
 				git reset HEAD "$FILE"
 				# add the zipped directory
