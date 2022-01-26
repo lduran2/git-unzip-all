@@ -1,23 +1,45 @@
 #!/usr/bin/env bash
-# Canonical : https://github.com/lduran2/git-unzip-all/git-config-hook-unzip-all
+# Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t06:40R
-# Version   : 1.0.0
+# When      : 2022-01-25t19:39R
+# Version   : 1.1.0
 # 
 # CHANGELOG :
-#   v1.0.0 - 2022-01-24t04:51R
-#       decompresses all Simulink models
+#   v1.1.0 - 2022-01-25t20:02R
+#       sets up the pattern file
+#       reconfigured for submodule
+#
+#   v1.0.0 - 2022-01-25t19:39R
+#       composes the hook file for pre-commit
 #
 
+# the repo root directory
+declare -r ROOT='../../'
 # hook file to which to attach
-declare -r HOOK_FILE='.git/hooks/pre-commit'
+declare -r HOOK_FILE='$ROOT.git/hooks/pre-commit'
+# contains the patterns of files to unzip
+declare -r PATTERN_FILE='$ROOT.unzip'
 
 # if the file does not exist
 if [[ ! -f $HOOK_FILE ]] ;
 then
-    cat < hooks/components/header > $HOOK_FILE
+	echo "Created the pre-commit hook file."
+	# start it by adding the head
+	cat < templates/header > $HOOK_FILE
 fi # [[ ! -f $HOOK_FILE ]]
 
+echo "Added `unzip-all` to the pre-commit hook file."
 # always add the hook that attaches `. hooks/unzip-all`
-cat < hooks/components/source-unzip-all >> $HOOK_FILE
+cat < templates/body-source >> $HOOK_FILE
+
+# if the pattern file does not exist
+if [[ ! -f $PATTERN_FILE ]] ;
+then
+	echo "Create the pattern file `/.unzip`"
+	# copy it from the template
+	cat < templates/.unzip > $PATTERN_FILE
+fi # [[ ! -f $PATTERN_FILE ]]
+
+# confirm finished
+echo('Done.')
