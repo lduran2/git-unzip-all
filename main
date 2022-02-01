@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# Canonical : https://github.com/lduran2/git-unzip-all/hooks/unzip_all
+# Canonical : https://github.com/lduran2/git-unzip-all/main
 # Decompresses all Simulink models in this repo after pushing to
 # remote.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t20:02R
-# Version   : 1.2.1
+# When      : 2022-01-25t22:07R
+# Version   : 1.2.2
 # 
 # CHANGELOG :
+#   v1.2.2 - 2022-01-25t22:07R
+#       now assumed to be in `hooks/unzip-all`
+#       reconfigured for submodule
+#
 #   v1.2.1 - 2022-01-25t20:02R
 #       nonverbose unzip bcs the files were not being unzipped
 #
@@ -25,7 +29,7 @@
 # relative to the root
 declare -r PATTERN_FILE_FROM_ROOT='.unzip'
 # the path of the repo root
-declare -r ROOT="${BASH_SOURCE%/*}/../"
+declare -r ROOT="${BASH_SOURCE%/*}/../../"
 # the path resolved to this script
 declare -r PATTERN_FILE="$ROOT$PATTERN_FILE_FROM_ROOT"
 
@@ -57,4 +61,3 @@ done < "$PATTERN_FILE" # while read SPACE_PATTERN
 
 # confirm finished
 echo "Done."
-
