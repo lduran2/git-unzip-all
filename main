@@ -3,10 +3,13 @@
 # Decompresses all Simulink models in this repo after pushing to
 # remote.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t22:07R
-# Version   : 1.2.2
+# When      : 2022-01-01t05:18R
+# Version   : 1.3.0
 # 
 # CHANGELOG :
+#   v1.3.0 - 2022-02-01t05:18R
+#       use `dirname` to hangle resource locality
+#
 #   v1.2.2 - 2022-01-25t22:07R
 #       now assumed to be in `hooks/unzip-all`
 #       reconfigured for submodule
@@ -25,13 +28,12 @@
 #       decompresses all Simulink models
 #
 
+# working directories
+declare -r SOURCE_DIR=$(dirname $0)
+declare -r ROOT_DIR="$SOURCE_DIR/../.."
+
 # configuration file contains the file patterns to unzip
-# relative to the root
-declare -r PATTERN_FILE_FROM_ROOT='.unzip'
-# the path of the repo root
-declare -r ROOT="${BASH_SOURCE%/*}/../../"
-# the path resolved to this script
-declare -r PATTERN_FILE="$ROOT$PATTERN_FILE_FROM_ROOT"
+declare -r PATTERN_FILE="$ROOTDIR/.unzip"
 
 # read all lines from the configuration file
 while read SPACE_PATTERN ; do
@@ -42,7 +44,7 @@ while read SPACE_PATTERN ; do
 	then
 		echo "unzipping files matching \"${pattern%/\r}\" . . ."
 		# find each file matching the pattern
-		find "$ROOT" -type f -name "$pattern" -printf '%p\n' | 
+		find "$ROOT_DIR/" -type f -name "$pattern" -printf '%p\n' |
 			# read the filename into FILE
 			while read FILE ; do
 				echo "unzipping file \"$FILE\" . . ."
