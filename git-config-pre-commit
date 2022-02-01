@@ -2,10 +2,20 @@
 # Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-02-01t07:32R
-# Version   : 1.2.3
+# When      : 2022-02-01t09:15R
+# Version   : 1.3.2
 # 
 # CHANGELOG :
+#   v1.3.2 - 2022-02-01t09:15R
+#       cleaned up logs, `HOOK_TO_SKIP`
+#
+#   v1.3.1 - 2022-02-01t09:03R
+#       logging for pre-commit templating
+#
+#   v1.3.0 - 2022-02-01t08:52R
+#       single file for pre-commit template
+#       variable template
+#
 #   v1.2.3 - 2022-02-01t07:32R
 #       checking for hook file before assembly
 #
@@ -46,37 +56,45 @@ declare -r TEMPLATE_DIR="$SOURCE_DIR/templates"
 # hook file to which to attach `./main`
 declare -r HOOK_FILE="$ROOT_DIR/.git/hooks/pre-commit"
 # contains the patterns of files to unzip (relative to root)
-declare -r PATTERN_FILE_FROM_ROOT=".unzip"
+declare -r ROOT_TO_PATTERN_FILE=".unzip"
 # the unzip pattern file resolved to this script
-declare -r PATTERN_FILE="$ROOT_DIR/$PATTERN_FILE_FROM_ROOT"
+declare -r PATTERN_FILE="$ROOT_DIR/$ROOT_TO_PATTERN_FILE"
+
+# line in the template to which to skip (if the hook file exists)
+declare -r HOOK_TO_SKIP=2
+# find this directory relative to the repo root
+declare -r ROOT_TO_SOURCE=$(realpath --relative-to=$ROOT_DIR $SOURCE_DIR)
 
 # check if the hook file exists before starting assembling
 # [] returns 0 if the file exists, 1 otherwise
 [ -f "$HOOK_FILE" ] ; should_create_hook=$?
 
-# assemble the hook file
-{
-    # if not, then
+# read from the template
+cat "$TEMPLATE_DIR/pre-commit" |
+    # if the hook file does not exist
     if [ $should_create_hook -ne 0 ] ; then
-        >&2 echo 'Creating the pre-commit hook file . . .'
-        # start it by adding the head
-        cat < "$TEMPLATE_DIR/header"
-    fi # [[ ! -f "$HOOK_FILE" ]]
-
-    >&2 echo 'Adding `unzip-all` to the pre-commit hook file . . .'
-    # always add the hook that attaches `./main`
-    cat < "$TEMPLATE_DIR/body-source"
-} >> "$HOOK_FILE"
+         >&2 echo 'Creating the pre-commit hook file . . .'
+        # just forward the file as is
+        cat
+    else # to [ $should_create_hook -ne 0 ]
+         >&2 echo 'Appending `unzip-all` to the pre-commit hook file . . .'
+        # otherwise, newline and skip the script shebang
+        echo ''
+        tail "-n+$HOOK_TO_SKIP"
+    fi | # [ $should_create_hook -ne 0 ]
+        # replace the template source path
+        sed -e "s:\\\$ROOT_TO_SOURCE:$ROOT_TO_SOURCE:g" >> "$HOOK_FILE"
+# end cat "$TEMPLATE_DIR/pre-commit"
 
 # if the pattern file does not exist
 if [[ ! -f "$PATTERN_FILE" ]] ; then
-    >&2 echo "Creating the pattern file \`/$PATTERN_FILE_FROM_ROOT\` . . ."
+    >&2 echo "Creating the pattern file \`/$ROOT_TO_PATTERN_FILE\` . . ."
     # copy it from the template
-    cat < "$TEMPLATE_DIR/$PATTERN_FILE_FROM_ROOT" > "$PATTERN_FILE"
+    cat "$TEMPLATE_DIR/$ROOT_TO_PATTERN_FILE" > "$PATTERN_FILE"
 fi # [[ ! -f "$PATTERN_FILE" ]]
 
+>&2 echo "Staging the pattern file \`/$ROOT_TO_PATTERN_FILE\` . . ."
 # either way, stage the pattern file
-echo 'Staging the pattern file . . .'
 git add "$PATTERN_FILE"
 
 # confirm finished
