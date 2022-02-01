@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# call unzip-all from the repo root
+. $ROOT_TO_SOURCE/main
