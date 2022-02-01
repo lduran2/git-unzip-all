@@ -1,2 +1,2 @@
 # call unzip-all from the repo root
-. hooks/unzip-all
+. hooks/unzip-all/main
