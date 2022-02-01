@@ -1,7 +1,7 @@
 # [lduran2] / [git-unzip-all]
 
-configures the filters and `.gitignore`s for cleaning Jupyter
-notebooks.
+hooks a script to uncompress all files matching desired patterns after
+to the pre-commit stage of a repo.
 
 ## How to download
 
