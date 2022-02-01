@@ -2,10 +2,13 @@
 # Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-02-01t05:52R
-# Version   : 1.2.1
+# When      : 2022-02-01t06:30R
+# Version   : 1.2.2
 # 
 # CHANGELOG :
+#   v1.2.2 - 2022-02-01t06:30R
+#       staging pattern file
+#
 #   v1.2.1 - 2022-02-01t06:02R
 #       fixed `$SCRIPT_ROOT.` -> `$SOURCE_DIR`
 #
@@ -35,11 +38,14 @@
 # working directories
 declare -r SOURCE_DIR=$(dirname $0)
 declare -r ROOT_DIR="$SOURCE_DIR/../.."
+declare -r TEMPLATE_DIR="$SOURCE_DIR/templates"
 
 # hook file to which to attach `./main`
 declare -r HOOK_FILE="$ROOT_DIR/.git/hooks/pre-commit"
-# contains the patterns of files to unzip
-declare -r PATTERN_FILE="$ROOT_DIR/.unzip"
+# contains the patterns of files to unzip (relative to root)
+declare -r PATTERN_FILE_FROM_ROOT=".unzip"
+# the unzip pattern file resolved to this script
+declare -r PATTERN_FILE="$ROOT_DIR/$PATTERN_FILE_FROM_ROOT"
 
 # assemble the hook file
 {
@@ -48,21 +54,24 @@ declare -r PATTERN_FILE="$ROOT_DIR/.unzip"
     then
         >&2 echo 'Created the pre-commit hook file.'
         # start it by adding the head
-        cat < "$SOURCE_DIR/templates/header"
+        cat < "$TEMPLATE_DIR/header"
     fi # [[ ! -f "$HOOK_FILE" ]]
 
     >&2 echo 'Added `unzip-all` to the pre-commit hook file.'
     # always add the hook that attaches `./main`
-    cat < "$SOURCE_DIR/templates/body-source"
+    cat < "$TEMPLATE_DIR/body-source"
 } >> "$HOOK_FILE"
 
 # if the pattern file does not exist
 if [[ ! -f "$PATTERN_FILE" ]] ;
 then
-	>&2 echo 'Create the pattern file `/.unzip`'
-	# copy it from the template
-	cat < "$SOURCE_DIR/templates/.unzip" > "$PATTERN_FILE"
+    >&2 echo "Create the pattern file `/$PATTERN_FILE_FROM_ROOT`"
+    # copy it from the template
+    cat < "$TEMPLATE_DIR/$PATTERN_FILE_FROM_ROOT" > "$PATTERN_FILE"
 fi # [[ ! -f "$PATTERN_FILE" ]]
+
+# either way, stage the pattern file
+git add "$PATTERN_FILE"
 
 # confirm finished
 >&2 echo 'Done.'
