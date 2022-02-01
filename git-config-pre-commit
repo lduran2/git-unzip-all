@@ -2,10 +2,13 @@
 # Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-02-01t08:52R
-# Version   : 1.3.0
+# When      : 2022-02-01t09:03R
+# Version   : 1.3.1
 # 
 # CHANGELOG :
+#   v1.3.1 - 2022-02-01t09:03R
+#       logging for pre-commit templating
+#
 #   v1.3.0 - 2022-02-01t08:52R
 #       single file for pre-commit template
 #       variable template
@@ -66,21 +69,24 @@ declare -r ROOT_TO_SOURCE=\
 cat "$TEMPLATE_DIR/pre-commit" |
     # if the hook file does not exist
     if [ $should_create_hook -ne 0 ] ; then
+         >&2 echo 'Creating the pre-commit hook file . . .'
         # just forward the file as is
         cat
     else # to [ $should_create_hook -ne 0 ]
+         >&2 echo 'Appending `unzip-all` to the pre-commit hook file . . .'
         # otherwise, newline and skip the script shebang
         echo ''
         tail -n+2
     fi | # [ $should_create_hook -ne 0 ]
         # replace the template source path
         sed -e "s:\\\$ROOT_TO_SOURCE:$ROOT_TO_SOURCE:g" >> "$HOOK_FILE"
+# end cat "$TEMPLATE_DIR/pre-commit"
 
 # if the pattern file does not exist
 if [[ ! -f "$PATTERN_FILE" ]] ; then
     >&2 echo "Creating the pattern file \`/$ROOT_TO_PATTERN_FILE\` . . ."
     # copy it from the template
-    cat < "$TEMPLATE_DIR/$ROOT_TO_PATTERN_FILE" > "$PATTERN_FILE"
+    cat "$TEMPLATE_DIR/$ROOT_TO_PATTERN_FILE" > "$PATTERN_FILE"
 fi # [[ ! -f "$PATTERN_FILE" ]]
 
 # either way, stage the pattern file
