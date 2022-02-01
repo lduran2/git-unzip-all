@@ -2,10 +2,22 @@
 # Canonical : https://github.com/lduran2/git-unzip-all/git-config-pre-commit
 # Configure the pre-commit hook to run hooks/unzip-all.
 # By        : Leomar Duran <https://github.com/lduran2>
-# When      : 2022-01-25t22:16R
-# Version   : 1.1.2
+# When      : 2022-02-01t05:52R
+# Version   : 1.2.1
 # 
 # CHANGELOG :
+#   v1.2.1 - 2022-02-01t06:02R
+#       fixed `$SCRIPT_ROOT.` -> `$SOURCE_DIR`
+#
+#   v1.2.0 - 2022-02-01t05:11R
+#       use `dirname` to hangle resource locality
+#
+#   v1.1.4 - 2022-01-25t22:42R
+#       add variable references in strings
+#
+#   v1.1.3 - 2022-01-25t22:32R
+#       added `SCRIPT_ROOT` for files rel to script
+#
 #   v1.1.2 - 2022-01-25t22:24R
 #       fixed the unformated strings for the life cycle messages
 #
@@ -20,32 +32,37 @@
 #       composes the hook file for pre-commit
 #
 
-# the path of the repo root
-declare -r ROOT="${BASH_SOURCE%/*}/../../"
-# hook file to which to attach
-declare -r HOOK_FILE="$ROOT.git/hooks/pre-commit"
+# working directories
+declare -r SOURCE_DIR=$(dirname $0)
+declare -r ROOT_DIR="$SOURCE_DIR/../.."
+
+# hook file to which to attach `./main`
+declare -r HOOK_FILE="$ROOT_DIR/.git/hooks/pre-commit"
 # contains the patterns of files to unzip
-declare -r PATTERN_FILE="$ROOT.unzip"
+declare -r PATTERN_FILE="$ROOT_DIR/.unzip"
 
-# if the file does not exist
-if [[ ! -f $HOOK_FILE ]] ;
-then
-	echo 'Created the pre-commit hook file.'
-	# start it by adding the head
-	cat < templates/header > $HOOK_FILE
-fi # [[ ! -f $HOOK_FILE ]]
+# assemble the hook file
+{
+    # if the file does not exist
+    if [[ ! -f "$HOOK_FILE" ]] ;
+    then
+        >&2 echo 'Created the pre-commit hook file.'
+        # start it by adding the head
+        cat < "$SOURCE_DIR/templates/header"
+    fi # [[ ! -f "$HOOK_FILE" ]]
 
-echo 'Added `unzip-all` to the pre-commit hook file.'
-# always add the hook that attaches `. hooks/unzip-all`
-cat < templates/body-source >> $HOOK_FILE
+    >&2 echo 'Added `unzip-all` to the pre-commit hook file.'
+    # always add the hook that attaches `./main`
+    cat < "$SOURCE_DIR/templates/body-source"
+} >> "$HOOK_FILE"
 
 # if the pattern file does not exist
-if [[ ! -f $PATTERN_FILE ]] ;
+if [[ ! -f "$PATTERN_FILE" ]] ;
 then
-	echo 'Create the pattern file `/.unzip`'
+	>&2 echo 'Create the pattern file `/.unzip`'
 	# copy it from the template
-	cat < templates/.unzip > $PATTERN_FILE
-fi # [[ ! -f $PATTERN_FILE ]]
+	cat < "$SOURCE_DIR/templates/.unzip" > "$PATTERN_FILE"
+fi # [[ ! -f "$PATTERN_FILE" ]]
 
 # confirm finished
-echo('Done.')
+>&2 echo 'Done.'
